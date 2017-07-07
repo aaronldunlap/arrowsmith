@@ -1,0 +1,23 @@
+{
+  "name": "arrowsmith",
+  "main": "arrowsmith.js",
+  "homepage": "https://github.com/aaronldunlap/arrowsmith",
+  "authors": [
+    "Aaron Dunlap <adunlap@signal.co>"
+  ],
+  "description": "",
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "gmaps": "^0.4.25",
+    "jquery": "^3.2.1",
+    "lodash": "^4.17.4"
+  }
+}

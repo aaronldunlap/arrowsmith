@@ -1,0 +1,132 @@
+<style>
+  #locations {
+    height: 450px;
+  }
+  
+  .anchor:target {
+    padding-top: 90px;
+  }
+  
+  #loc8-map {
+    width: 100%;
+    height: 100%;
+    position: relative;
+  }
+  
+  #loc8-map .bsi-false {
+    display: none;
+  }
+  
+  #loc8-map .bsi-true {
+    font-weight: bold;
+  }
+  
+  .location-image {
+    display: block;
+    background-size: cover;
+    background-position: center center;
+    height: 0;
+    padding-top: 61%;
+    background-repeat: no-repeat;
+  }
+  
+  #loc8-map .regions {
+    box-shadow: 0 0 14px rgba(100, 100, 100, 0.8);
+    transition: all 400ms ease;
+    cursor: pointer;
+    position: absolute;
+    top: 5%;
+    right: 5%;
+  }
+  
+  #loc8-map .regions:hover {
+    box-shadow: 0 0 14px 10px rgba(100, 100, 100, 0.8);
+  }
+  
+  option {
+    cursor: pointer;
+  }
+</style>
+
+<script src="https://maps.google.com/maps/api/js?key=AIzaSyAgzgUgJ6Si2xxmduKdwrtyXx5YAnQNNR8"></script>
+<!--<script src="{{ url_for('static', filename='bower_components/gmaps/gmaps.min.js') }}"></script>
+<script src="{{ url_for('static', filename='bower_components/lodash/lodash.js') }}"></script>
+<script src="{{ url_for('static', filename='js/loc8-min.js') }}"></script>-->
+<script>
+  var locator = new loc8('#loc8-map');
+
+  locator.style([{
+    "featureType": "administrative",
+    "elementType": "labels.text.fill",
+    "stylers": [{
+      "color": "#444444"
+    }]
+  }, {
+    "featureType": "landscape",
+    "elementType": "all",
+    "stylers": [{
+      "color": "#f2f2f2"
+    }]
+  }, {
+    "featureType": "poi",
+    "elementType": "all",
+    "stylers": [{
+      "visibility": "off"
+    }]
+  }, {
+    "featureType": "road",
+    "elementType": "all",
+    "stylers": [{
+      "saturation": -100
+    }, {
+      "lightness": 45
+    }]
+  }, {
+    "featureType": "road.highway",
+    "elementType": "all",
+    "stylers": [{
+      "visibility": "simplified"
+    }]
+  }, {
+    "featureType": "road.arterial",
+    "elementType": "labels.icon",
+    "stylers": [{
+      "visibility": "off"
+    }]
+  }, {
+    "featureType": "transit",
+    "elementType": "all",
+    "stylers": [{
+      "visibility": "off"
+    }]
+  }, {
+    "featureType": "water",
+    "elementType": "all",
+    "stylers": [{
+      "color": "#46bcec"
+    }, {
+      "visibility": "on"
+    }]
+  }]);
+  locator.locationTemplate = '<a class="location-image" target="_blank" href="http://maps.google.com/?q=<%= name %> <%= address %> <%= zipcode %>" style="background-image: url(\'<%= photo %>\');"></a><h4><%= name %></h4> <p><%= address %><br><%= city %>, <%=state%> <%=zipcode%> </p> <p>Email to: <a href="mailto:<%= email %>"><%= email %></a></p><p class="bsi-<%= bsi_enabled %>">Features copy, scan, and fax</p>';
+  locator.locationMarker = '#2F4F9F';
+  var region;
+
+  // Event listeners --
+  // -- Pre-select Chicago by default
+  $.getJSON('http://www.geoplugin.net/json.gp?jsoncallback=?', function(data) {
+    if (typeof data.geoplugin_city != 'undefined' && data.geoplugin_city != '') {
+      region = data.geoplugin_city;
+      setTimeout(function() {
+        locator.selectRegion(region);
+      }, 2000);
+    }
+  });
+  locator.on('regions-built', function(event, data) {
+    locator.selectRegion('Chicago');
+  });
+
+  // Let's go!
+  locator.loadLocations('https://www.printwithme.com/api/locations/')
+  locator.loadRegions('https://www.printwithme.com/api/markets/')
+</script>

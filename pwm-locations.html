@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>loc8 locations map</title>
+  <script language="JavaScript" src="http://www.geoplugin.net/javascript.gp" type="text/javascript"></script>
+</head>
+
+<body>
+  <style>
+    html *,
+    html *:before,
+    html *:after {
+      box-sizing: border-box;
+    }
+    
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+    }
+    
+    #loc8-map {
+      width: 100%;
+      width: 100vw;
+      height: 100%;
+      height: 100vh;
+      border: none;
+      position: relative;
+    }
+    
+    #loc8-map .bsi-false {
+      display: none;
+    }
+    
+    #loc8-map .bsi-true {
+      font-weight: bold;
+    }
+    
+    .location-image {
+      display: block;
+      background-size: cover;
+      background-position: center center;
+      height: 0;
+      padding-top: 61%;
+      background-repeat: no-repeat;
+    }
+    
+    #loc8-map .regions {
+      box-shadow: 0 0 14px rgba(100, 100, 100, 0.8);
+      transition: all 400ms ease;
+      cursor: pointer;
+      position: absolute;
+      bottom: 2vh;
+      top: auto;
+      right: 2vh;
+      z-index: 101;
+      font-size: 16pt;
+    }
+    
+    #loc8-map .regions:hover {
+      box-shadow: 0 0 14px 10px rgba(100, 100, 100, 0.8);
+    }
+    
+    option {
+      cursor: pointer;
+    }
+    
+    #bottom-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100vw;
+      height: 8vh;
+      background: #F5F5F5;
+      font-family: Helvetica Neue;
+      box-shadow: 0 0 3vh #424242;
+      z-index: 100;
+      padding: 0 0 0 10px;
+    }
+    
+    #bottom-bar a {
+      background-image: url(http://www.printwithme.com/static/img/PrintWithMe-2015-Logo.png);
+      background-repeat: no-repeat;
+      background-size: 80%;
+      background-position: center center;
+      display: block;
+      width: 30vw;
+      max-width: 200px;
+      height: 100%;
+      position: relative;
+      transition: all 100ms ease-in;
+      text-decoration: none;
+      padding-left: vw;
+      vertical-align: middle;
+    }
+    
+    #bottom-bar a:hover {
+      padding-left: 20px;
+      background-size: 60%;
+      background-position: center 70%;
+    }
+    
+    #bottom-bar a:before {
+      content: "<";
+      text-decoration: none;
+      font-size: 20px;
+      display: inline-block;
+      vertical-align: middle;
+      margin-top: 8px;
+    }
+    
+    #bottom-bar a:hover:before {
+      content: "< Return To";
+      margin: 5px 0 0 20px;
+      font-size: 15px;
+    }
+  </style>
+  <div id="loc8-map"></div>
+  <div id="bottom-bar">
+    <a href="/"></a>
+  </div>
+  <script src="http://maps.google.com/maps/api/js?key=AIzaSyAgzgUgJ6Si2xxmduKdwrtyXx5YAnQNNR8"></script>
+  <script src="bower_components/gmaps/gmaps.min.js"></script>
+  <script src="bower_components/jquery/dist/jquery.min.js"></script>
+  <script src="bower_components/lodash/lodash.js"></script>
+  <script src="arrowsmith.js"></script>
+  <script>
+    var smith = new arrowsmith('#loc8-map');
+
+    // Apple Maps style:
+    //smith.style([{"featureType":"landscape.man_made","elementType":"geometry","stylers":[{"color":"#f7f1df"}]},{"featureType":"landscape.natural","elementType":"geometry","stylers":[{"color":"#d0e3b4"}]},{"featureType":"landscape.natural.terrain","elementType":"geometry","stylers":[{"visibility":"off"}]},{"featureType":"poi","elementType":"labels","stylers":[{"visibility":"off"}]},{"featureType":"poi.business","elementType":"all","stylers":[{"visibility":"off"}]},{"featureType":"poi.medical","elementType":"geometry","stylers":[{"color":"#fbd3da"}]},{"featureType":"poi.park","elementType":"geometry","stylers":[{"color":"#bde6ab"}]},{"featureType":"road","elementType":"geometry.stroke","stylers":[{"visibility":"off"}]},{"featureType":"road","elementType":"labels","stylers":[{"visibility":"off"}]},{"featureType":"road.highway","elementType":"geometry.fill","stylers":[{"color":"#ffe15f"}]},{"featureType":"road.highway","elementType":"geometry.stroke","stylers":[{"color":"#efd151"}]},{"featureType":"road.arterial","elementType":"geometry.fill","stylers":[{"color":"#ffffff"}]},{"featureType":"road.local","elementType":"geometry.fill","stylers":[{"color":"black"}]},{"featureType":"transit.station.airport","elementType":"geometry.fill","stylers":[{"color":"#cfb2db"}]},{"featureType":"water","elementType":"geometry","stylers":[{"color":"#a2daf2"}]}])
+
+    smith.style([{
+      "featureType": "administrative",
+      "elementType": "labels.text.fill",
+      "stylers": [{
+        "color": "#444444"
+      }]
+    }, {
+      "featureType": "landscape",
+      "elementType": "all",
+      "stylers": [{
+        "color": "#f2f2f2"
+      }]
+    }, {
+      "featureType": "poi",
+      "elementType": "all",
+      "stylers": [{
+        "visibility": "off"
+      }]
+    }, {
+      "featureType": "road",
+      "elementType": "all",
+      "stylers": [{
+        "saturation": -100
+      }, {
+        "lightness": 45
+      }]
+    }, {
+      "featureType": "road.highway",
+      "elementType": "all",
+      "stylers": [{
+        "visibility": "simplified"
+      }]
+    }, {
+      "featureType": "road.arterial",
+      "elementType": "labels.icon",
+      "stylers": [{
+        "visibility": "off"
+      }]
+    }, {
+      "featureType": "transit",
+      "elementType": "all",
+      "stylers": [{
+        "visibility": "off"
+      }]
+    }, {
+      "featureType": "water",
+      "elementType": "all",
+      "stylers": [{
+        "color": "#46bcec"
+      }, {
+        "visibility": "on"
+      }]
+    }]);
+    smith.locationTemplate = '<a class="location-image" target="_blank" href="http://maps.google.com/?q=<%= name %> <%= address %> <%= zipcode %>" style="background-image: url(\'<%= photo %>\');"></a><h4><%= name %></h4> <p><%= address %><br><%= city %>, <%=state%> <%=zipcode%> </p> <p>Email to: <a href="mailto:<%= email %>"><%= email %></a></p><p class="bsi-<%= bsi_enabled %>">Features copy, scan, and fax</p>';
+    smith.locationMarker = '#2F4F9F';
+
+    smith.locationMarker = function() {
+      if (this.data.bsi_enabled) return smith.colorPin('#1533f0');
+      return smith.colorPin('#e3feed');
+    }
+
+    var region;
+
+    // // Event listeners --
+    // // -- Pre-select Chicago by default
+    // $.getJSON('http://www.geoplugin.net/json.gp?jsoncallback=?', function(data) {
+    //   if (typeof data.geoplugin_city != 'undefined' && data.geoplugin_city != '') {
+    //     region = data.geoplugin_city;
+    //     setTimeout(function() {
+    //       smith.selectRegion(region);
+    //     }, 2000);
+    //   }
+    // });
+    smith.on('regions-built', function(event, data) {
+      smith.selectRegion('Chicago');
+    });
+
+    // Let's go!
+    smith.loadLocations('https://www.printwithme.com/api/locations/')
+    smith.loadRegions('https://www.printwithme.com/api/markets/')
+  </script>
+</body>
+
+</html>
