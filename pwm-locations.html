@@ -136,74 +136,39 @@
   <script>
     var smith = new arrowsmith('#loc8-map');
 
-    // Apple Maps style:
-    //smith.style([{"featureType":"landscape.man_made","elementType":"geometry","stylers":[{"color":"#f7f1df"}]},{"featureType":"landscape.natural","elementType":"geometry","stylers":[{"color":"#d0e3b4"}]},{"featureType":"landscape.natural.terrain","elementType":"geometry","stylers":[{"visibility":"off"}]},{"featureType":"poi","elementType":"labels","stylers":[{"visibility":"off"}]},{"featureType":"poi.business","elementType":"all","stylers":[{"visibility":"off"}]},{"featureType":"poi.medical","elementType":"geometry","stylers":[{"color":"#fbd3da"}]},{"featureType":"poi.park","elementType":"geometry","stylers":[{"color":"#bde6ab"}]},{"featureType":"road","elementType":"geometry.stroke","stylers":[{"visibility":"off"}]},{"featureType":"road","elementType":"labels","stylers":[{"visibility":"off"}]},{"featureType":"road.highway","elementType":"geometry.fill","stylers":[{"color":"#ffe15f"}]},{"featureType":"road.highway","elementType":"geometry.stroke","stylers":[{"color":"#efd151"}]},{"featureType":"road.arterial","elementType":"geometry.fill","stylers":[{"color":"#ffffff"}]},{"featureType":"road.local","elementType":"geometry.fill","stylers":[{"color":"black"}]},{"featureType":"transit.station.airport","elementType":"geometry.fill","stylers":[{"color":"#cfb2db"}]},{"featureType":"water","elementType":"geometry","stylers":[{"color":"#a2daf2"}]}])
-
-    smith.style([{
-      "featureType": "administrative",
-      "elementType": "labels.text.fill",
-      "stylers": [{
-        "color": "#444444"
-      }]
-    }, {
-      "featureType": "landscape",
-      "elementType": "all",
-      "stylers": [{
-        "color": "#f2f2f2"
-      }]
-    }, {
-      "featureType": "poi",
-      "elementType": "all",
-      "stylers": [{
-        "visibility": "off"
-      }]
-    }, {
-      "featureType": "road",
-      "elementType": "all",
-      "stylers": [{
-        "saturation": -100
-      }, {
-        "lightness": 45
-      }]
-    }, {
-      "featureType": "road.highway",
-      "elementType": "all",
-      "stylers": [{
-        "visibility": "simplified"
-      }]
-    }, {
-      "featureType": "road.arterial",
-      "elementType": "labels.icon",
-      "stylers": [{
-        "visibility": "off"
-      }]
-    }, {
-      "featureType": "transit",
-      "elementType": "all",
-      "stylers": [{
-        "visibility": "off"
-      }]
-    }, {
-      "featureType": "water",
-      "elementType": "all",
-      "stylers": [{
-        "color": "#46bcec"
-      }, {
-        "visibility": "on"
-      }]
-    }]);
+    // Blue map style
+    smith.style([{ "featureType": "administrative", "elementType": "labels.text.fill", "stylers": [{ "color": "#444444" }] }, { "featureType": "landscape", "elementType": "all", "stylers": [{ "color": "#f2f2f2" }] }, { "featureType": "poi", "elementType": "all", "stylers": [{ "visibility": "off" }] }, { "featureType": "road", "elementType": "all", "stylers": [{ "saturation": -100 }, { "lightness": 45 }] }, { "featureType": "road.highway", "elementType": "all", "stylers": [{ "visibility": "simplified" }] }, { "featureType": "road.arterial", "elementType": "labels.icon", "stylers": [{ "visibility": "off" }] }, { "featureType": "transit", "elementType": "all", "stylers": [{ "visibility": "off" }] }, { "featureType": "water", "elementType": "all", "stylers": [{ "color": "#46bcec" }, { "visibility": "on" }] }]);
+    
+    // Template for info box
     smith.locationTemplate = '<a class="location-image" target="_blank" href="http://maps.google.com/?q=<%= name %> <%= address %> <%= zipcode %>" style="background-image: url(\'<%= photo %>\');"></a><h4> <a href="/location/<%=email.match(/([^@]+)@/)[1]%>"> <%= name %></a></h4> <p><%= address %><br><%= city %>, <%=state%> <%=zipcode%> </p> <p>Email to: <a href="mailto:<%= email %>"><%= email %></a></p><p class="bsi-<%= bsi_enabled %>">Features copy, scan, and fax</p>';
-    smith.locationMarker = '#2F4F9F';
 
+    // Function to determine map pin color based on location criteria
     smith.locationMarker = function() {
       if (this.data.bsi_enabled) return smith.colorPin('#026C7B');
       return smith.colorPin('#1AA6BC');
     }
 
-    var region;
+    // Default to Chicago
+    smith.on('regions-built', function(event, data) {
+      smith.selectRegion('Chicago');
+    });
+
+    // Load locations and regions from API
+    smith.loadLocations('https://www.printwithme.com/api/locations/')
+    smith.loadRegions('https://www.printwithme.com/api/markets/')
+
+    // Register filter(s)
+    smith.registerFilter('bsi_enabled', 'data.bsi_enabled'); // Property name shorthand
+
+    // Add toggle switch for filter
+    $('#bsi_toggle').on('change', function(i) {
+      smith.filterToggle('bsi_enabled');
+    });
+
 
     // // Event listeners --
     // // -- Pre-select Chicago by default
+    // var region;
     // $.getJSON('http://www.geoplugin.net/json.gp?jsoncallback=?', function(data) {
     //   if (typeof data.geoplugin_city != 'undefined' && data.geoplugin_city != '') {
     //     region = data.geoplugin_city;
@@ -212,19 +177,6 @@
     //     }, 2000);
     //   }
     // });
-    smith.on('regions-built', function(event, data) {
-      smith.selectRegion('Chicago');
-    });
-
-    // Let's go!
-    smith.loadLocations('https://www.printwithme.com/api/locations/')
-    smith.loadRegions('https://www.printwithme.com/api/markets/')
-
-    // Filters
-    smith.registerFilter('bsi_enabled', 'data.bsi_enabled')
-    $('#bsi_toggle').on('change', function(i) {
-      smith.filterToggle('bsi_enabled');
-    });
 
   </script>
 </body>
